@@ -105,6 +105,19 @@ def key_facts(df: pd.DataFrame) -> list[str]:
     return facts
 
 
+def shared_axis_domain(df: pd.DataFrame, columns: list[str]) -> list[float]:
+    """One [low, high] range that fits every listed column, with a little padding.
+
+    Using the same range on both axes makes the y = x reference line a true 45 degree line, and the
+    padding stops points on the edge from being cut off. The range starts at 0 unless values go below it.
+    """
+    values = pd.concat([df[c] for c in columns]).dropna()
+    low = min(0.0, float(values.min()))
+    high = float(values.max())
+    pad = max((high - low) * 0.05, 1.0)
+    return [low - pad if low < 0 else 0.0, high + pad]
+
+
 def default_window(df: pd.DataFrame) -> tuple[str, str]:
     """A sensible start and end for the rent vs house price comparison.
 

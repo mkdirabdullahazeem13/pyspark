@@ -61,7 +61,20 @@ with tab_overview:
         fastest = yoy.loc[yoy["rent_yoy_pct"].idxmax()]
         col3.metric("Fastest growing (1 year)", fastest["county"], f"{fastest['rent_yoy_pct']:+.1f}%")
 
-    st.bar_chart(ranking.set_index("county")["rent_eur"], y_label="Average monthly rent (€)")
+    bars = (
+        alt.Chart(ranking)
+        .mark_bar()
+        .encode(
+            x=alt.X("county:N", sort="-y", title=None, axis=alt.Axis(labelAngle=-45)),  # highest rent first
+            y=alt.Y("rent_eur:Q", title="Average monthly rent (€)"),
+            tooltip=[
+                alt.Tooltip("county:N", title="County"),
+                alt.Tooltip("rent_eur:Q", title="Rent (€/month)", format=",.0f"),
+            ],
+        )
+        .properties(height=380)
+    )
+    st.altair_chart(bars)
     st.dataframe(
         ranking.rename(
             columns={
@@ -104,19 +117,28 @@ with tab_compare:
         growth = analysis.growth_between(df, start, end)
         plotted = growth.dropna(subset=["house_price_change_pct"])
 
-        chart = (
+        # Same range on both axes, so the dashed y = x line is a true 45 degree line.
+        domain = analysis.shared_axis_domain(plotted, ["house_price_change_pct", "rent_change_pct"])
+        x_axis = alt.X("house_price_change_pct:Q", title="House price change (%)", scale=alt.Scale(domain=domain))
+        y_axis = alt.Y("rent_change_pct:Q", title="Rent change (%)", scale=alt.Scale(domain=domain))
+
+        reference = (
+            alt.Chart(pd.DataFrame({"house_price_change_pct": domain, "rent_change_pct": domain}))
+            .mark_line(strokeDash=[6, 4], color="gray")
+            .encode(x=x_axis, y=y_axis)
+        )
+        points = (
             alt.Chart(plotted)
             .mark_circle(size=110)
             .encode(
-                x=alt.X("house_price_change_pct:Q", title="House price change (%)"),
-                y=alt.Y("rent_change_pct:Q", title="Rent change (%)"),
+                x=x_axis,
+                y=y_axis,
                 color=alt.Color("price_area:N", title="Price region"),
                 tooltip=["county", "price_area", "rent_change_pct", "house_price_change_pct", "gap_pts"],
             )
-            .properties(height=420)
-            .interactive()
         )
-        st.altair_chart(chart)
+        st.altair_chart((reference + points).properties(height=460).interactive())
+        st.caption("Dots above the dashed line: rents rose faster than house prices. Below the line: prices rose faster.")
 
         st.markdown(
             f"**{start} to {end}.** `gap` = rent change minus house price change, in percentage points. "

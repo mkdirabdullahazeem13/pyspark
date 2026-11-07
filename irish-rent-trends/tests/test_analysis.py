@@ -64,6 +64,19 @@ def test_default_window(df):
     assert analysis.default_window(df) == ("2010H1", "2012H1")
 
 
+def test_shared_axis_domain_pads_and_starts_at_zero():
+    frame = pd.DataFrame({"x": [10.0, 100.0], "y": [20.0, 180.0]})
+    low, high = analysis.shared_axis_domain(frame, ["x", "y"])
+    assert low == 0.0
+    assert high == pytest.approx(180.0 + 9.0)  # 5% of the 180 range
+
+
+def test_shared_axis_domain_handles_negatives_and_missing():
+    frame = pd.DataFrame({"x": [-20.0, None, 40.0], "y": [10.0, 30.0, None]})
+    low, high = analysis.shared_axis_domain(frame, ["x", "y"])
+    assert low < -20.0 and high > 40.0
+
+
 def test_load_joined_rejects_missing_columns(tmp_path):
     path = tmp_path / "bad.csv"
     pd.DataFrame({"county": ["Dublin"]}).to_csv(path, index=False)
