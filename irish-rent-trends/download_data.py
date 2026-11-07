@@ -1,7 +1,7 @@
 """
 Download the raw datasets from the CSO (Central Statistics Office, Ireland).
 
-    RIQ02 - RTB Average Monthly Rent Report (rent by place, bedrooms, property type, quarter)
+    RIH02 - RTB Average Monthly Rent Report (rent by place, bedrooms, property type, quarter)
     HPM09 - Residential Property Price Index (monthly, by area and type of home)
 
 Both are published under CC BY 4.0. Files are saved to data/raw/ (which is git-ignored,
@@ -15,7 +15,7 @@ import urllib.request
 from pathlib import Path
 
 BASE_URL = "https://ws.cso.ie/public/api.restful/PxStat.Data.Cube_API.ReadDataset/{code}/CSV/1.0/en"
-TABLES = ["RIQ02", "HPM09"]
+TABLES = ["RIH02", "HPM09"]
 RAW_DIR = Path(__file__).parent / "data" / "raw"
 
 
