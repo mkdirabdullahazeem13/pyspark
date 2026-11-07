@@ -2,3 +2,8 @@
 data/
 output/
 __pycache__/
+
+# Editor backup files (Vim)
+*~
+.*.un~
+*.swp
