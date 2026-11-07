@@ -1,0 +1,4 @@
+# Raw and processed data are re-created by the scripts, so they stay out of git
+data/
+output/
+__pycache__/
