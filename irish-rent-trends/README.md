@@ -3,6 +3,10 @@
 How have rents changed across Ireland, by area? This project cleans two official open datasets,
 joins them, and answers that question with a PySpark pipeline.
 
+![Dashboard overview: average monthly rent by county, highest first](docs/dashboard-overview.png)
+
+*The Overview tab of the dashboard: rent by county for the latest half-year (2025H2).*
+
 ## Data
 
 Both come from the CSO (Central Statistics Office), under CC BY 4.0:

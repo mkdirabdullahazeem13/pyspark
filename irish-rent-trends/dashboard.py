@@ -65,7 +65,7 @@ with tab_overview:
         alt.Chart(ranking)
         .mark_bar()
         .encode(
-            x=alt.X("county:N", sort="-y", title=None, axis=alt.Axis(labelAngle=-45)),  # highest rent first
+            x=alt.X("county:N", sort="-y", title=None, axis=alt.Axis(labelAngle=-45, labelOverlap=False)),  # highest rent first; show every county name
             y=alt.Y("rent_eur:Q", title="Average monthly rent (€)"),
             tooltip=[
                 alt.Tooltip("county:N", title="County"),
