@@ -1,0 +1,4 @@
+pyspark
+streamlit>=1.50
+pandas
+pytest
