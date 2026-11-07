@@ -20,7 +20,7 @@ Both come from the CSO (Central Statistics Office), under CC BY 4.0:
 - [x] `clean_prices.py`: runs end to end
 - [x] Join rent and price data (`join_rent_prices.py`)
 - [x] Analysis calculations (`analysis.py`, with tests)
-- [ ] Dashboard (`dashboard.py` is written but has not been run yet)
+- [x] Dashboard (`dashboard.py`): runs and shows all four tabs
 - [x] Findings log (`FINDINGS.md`)
 
 ## How to run
