@@ -61,7 +61,7 @@ python clean_prices.py
 | Half-year periods | 36 |
 | Place/bedroom/type combinations missing a half-year | 0 |
 | Duplicate rows | 0 |
-| Locations where no county could be worked out | 139 |
+| Locations where no county could be worked out | 139 before the fix below, 0 after |
 
 **What I took from it**
 
@@ -75,7 +75,7 @@ python clean_prices.py
   written as `Clontarf, Dublin 3`, where the text after the comma is a postal district, not a county
   name. The job now recognises `Dublin <number>` (including `6W`), assigns County Dublin, and keeps the
   district number in its own `dublin_district` column so areas within Dublin can be compared later.
-  The locations that still have no county after this fix are listed in the next run's report.
+  After the fix, a second run reported 0 locations without a county, and every other check was unchanged.
 
 ## First result
 
