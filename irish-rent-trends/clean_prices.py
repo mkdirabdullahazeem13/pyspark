@@ -24,6 +24,8 @@ import logging
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql import functions as F
 
+from io_utils import write_table
+
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger("clean_prices")
 
@@ -134,9 +136,8 @@ def main() -> None:
     monthly = pivot_statistics(long_df).cache()
     log_quality_report(long_df, monthly)
 
-    monthly.write.mode("overwrite").partitionBy("year").parquet(f"{args.output}/prices_monthly")
-    to_half_years(monthly).write.mode("overwrite").parquet(f"{args.output}/prices_half_yearly")
-    log.info("Wrote %s/prices_monthly and %s/prices_half_yearly", args.output, args.output)
+    write_table(monthly, f"{args.output}/prices_monthly", partition_by=["year"])
+    write_table(to_half_years(monthly), f"{args.output}/prices_half_yearly")
 
     spark.stop()
 

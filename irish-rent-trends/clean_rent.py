@@ -23,6 +23,8 @@ import logging
 from pyspark.sql import DataFrame, SparkSession, Window
 from pyspark.sql import functions as F
 
+from io_utils import write_table
+
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger("clean_rent")
 
@@ -186,8 +188,7 @@ def main() -> None:
     log_quality_report(df)
 
     clean = df.filter(F.col("rent_eur").isNotNull())  # keep only rows that have a rent
-    clean.write.mode("overwrite").partitionBy("year").parquet(f"{args.output}/rent_clean")
-    log.info("Wrote %s/rent_clean", args.output)
+    write_table(clean, f"{args.output}/rent_clean", partition_by=["year"])
 
     # County-level headline table: the cleanest slice to start the analysis from.
     counties = clean.filter(
@@ -195,7 +196,7 @@ def main() -> None:
         & (F.col("bedrooms") == "All bedrooms")
         & F.col("is_all_property_types")
     ).select("county", "half_year", "period_start", "rent_eur", "rent_yoy_pct")
-    counties.write.mode("overwrite").parquet(f"{args.output}/county_rent_trends")
+    write_table(counties, f"{args.output}/county_rent_trends")
 
     latest = counties.agg(F.max("period_start")).first()[0]
     log.info("Counties on the latest half-year (%s), highest rent first:", latest)
