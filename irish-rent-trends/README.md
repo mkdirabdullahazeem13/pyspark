@@ -18,9 +18,10 @@ Both come from the CSO (Central Statistics Office), under CC BY 4.0:
 - [x] Profiling script (look at the raw files before cleaning them)
 - [x] `clean_rent.py`: runs end to end and produces the county rent table
 - [x] `clean_prices.py`: runs end to end
-- [ ] Join rent and price data: `join_rent_prices.py` is written but has not been run yet
-- [ ] Analysis: rent change by area
-- [ ] Dashboard
+- [x] Join rent and price data (`join_rent_prices.py`)
+- [x] Analysis calculations (`analysis.py`, with tests)
+- [ ] Dashboard (`dashboard.py` is written but has not been run yet)
+- [x] Findings log (`FINDINGS.md`)
 
 ## How to run
 
@@ -39,6 +40,7 @@ python download_data.py                     # RIH02 (rent) and HPM09 (prices)
 python clean_rent.py
 python clean_prices.py
 python join_rent_prices.py
+python -m streamlit run dashboard.py   # opens the dashboard in your browser
 ```
 
 ## What the raw data looked like
@@ -106,3 +108,18 @@ standard Irish regional groupings and were not checked against a CSO release.
 
 Limits to keep in mind: rent covers all property types but the regional price index is for houses only, and
 all counties in a region share the same house price figure.
+
+## Dashboard and findings
+
+`dashboard.py` is a Streamlit page that reads `output/rent_vs_house_prices.csv`:
+
+- **Overview**: latest rents by county, with the most expensive, cheapest and fastest-growing county
+- **County explorer**: pick counties and compare rent over time
+- **Rent vs house prices**: pick a start and end half-year and see whether rents rose faster than house
+  prices in each county's region, with a downloadable table
+- **Findings**: facts worked out from the data on each load, plus the hand-written log in `FINDINGS.md`
+
+The calculations live in `analysis.py` so they can be tested without a browser: `python -m pytest tests`.
+
+`FINDINGS.md` records what we learn, one row per finding, with where it came from and any caveat.
+Install everything with `pip install -r requirements.txt`.
