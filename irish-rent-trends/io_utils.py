@@ -15,7 +15,7 @@ import logging
 import os
 from pathlib import Path
 
-from pyspark.sql import DataFrame
+from pyspark.sql import DataFrame, SparkSession
 
 log = logging.getLogger("io_utils")
 
@@ -51,3 +51,13 @@ def _write_csv(df: DataFrame, csv_path: str) -> str:
         for row in df.toLocalIterator():
             writer.writerow(["" if value is None else value for value in row])
     return str(target)
+
+
+def read_table(spark: SparkSession, path: str) -> DataFrame:
+    """Read what write_table saved: a Parquet folder, or the CSV fallback next to it."""
+    if Path(path).is_dir():
+        return spark.read.parquet(path)
+    csv_path = path + ".csv"
+    if Path(csv_path).exists():
+        return spark.read.csv(csv_path, header=True, inferSchema=True)
+    raise FileNotFoundError(f"Nothing found at {path} or {csv_path}. Run the cleaning jobs first.")
