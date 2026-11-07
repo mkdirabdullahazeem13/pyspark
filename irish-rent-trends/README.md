@@ -17,8 +17,8 @@ Both come from the CSO (Central Statistics Office), under CC BY 4.0:
 - [x] Download script
 - [x] Profiling script (look at the raw files before cleaning them)
 - [x] `clean_rent.py`: runs end to end and produces the county rent table
-- [ ] `clean_prices.py`: reads and checks the data; output step still to be confirmed
-- [ ] Join rent and price data
+- [x] `clean_prices.py`: runs end to end
+- [ ] Join rent and price data: `join_rent_prices.py` is written but has not been run yet
 - [ ] Analysis: rent change by area
 - [ ] Dashboard
 
@@ -38,6 +38,7 @@ Cleaning jobs (need `pip install pyspark` and Java):
 python download_data.py                     # RIH02 (rent) and HPM09 (prices)
 python clean_rent.py
 python clean_prices.py
+python join_rent_prices.py
 ```
 
 ## What the raw data looked like
@@ -61,7 +62,7 @@ python clean_prices.py
 | Half-year periods | 36 |
 | Place/bedroom/type combinations missing a half-year | 0 |
 | Duplicate rows | 0 |
-| Locations where no county could be worked out | 139 |
+| Locations where no county could be worked out | 139 before the fix below, 0 after |
 
 **What I took from it**
 
@@ -75,7 +76,7 @@ python clean_prices.py
   written as `Clontarf, Dublin 3`, where the text after the comma is a postal district, not a county
   name. The job now recognises `Dublin <number>` (including `6W`), assigns County Dublin, and keeps the
   district number in its own `dublin_district` column so areas within Dublin can be compared later.
-  The locations that still have no county after this fix are listed in the next run's report.
+  After the fix, a second run reported 0 locations without a county, and every other check was unchanged.
 
 ## First result
 
@@ -95,3 +96,13 @@ counties grew by more than 10%. This shows what changed, not why. It is one tabl
 
 - **Windows output:** Spark's normal file writer needs `winutils` on Windows. `io_utils.py` writes
   Parquet when that works and falls back to CSV otherwise, so the jobs run either way.
+
+## How rents are joined to house prices
+
+The CSO publishes house prices for regions, not counties, so `county_to_price_area.csv` maps each county to a
+region. Border, Mid-East, Mid-West and West follow the groupings in the CSO's Residential Property Price Index
+releases (for example Mid-East = Kildare, Louth, Meath, Wicklow). Midland, South-East and South-West use the
+standard Irish regional groupings and were not checked against a CSO release.
+
+Limits to keep in mind: rent covers all property types but the regional price index is for houses only, and
+all counties in a region share the same house price figure.
