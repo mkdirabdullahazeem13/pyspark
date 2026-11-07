@@ -16,7 +16,9 @@ Or point it at real data (e.g. NYC taxi trips):
 
 import argparse
 import logging
+import os
 import random
+import sys
 from datetime import datetime, timedelta
 
 from pyspark.sql import DataFrame, SparkSession, Window
@@ -50,6 +52,10 @@ TRIP_SCHEMA = StructType(
 
 
 def get_spark(app_name: str = "TaxiTripsJob") -> SparkSession:
+    # Spark starts helper Python processes when data comes from Python lists. On Windows it can pick the
+    # Microsoft Store shortcut instead of real Python and fail, so tell it to use this same Python.
+    os.environ["PYSPARK_PYTHON"] = sys.executable
+    os.environ["PYSPARK_DRIVER_PYTHON"] = sys.executable
     return (
         SparkSession.builder.appName(app_name)
         .master("local[*]")
