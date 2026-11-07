@@ -137,7 +137,7 @@ with tab_compare:
                 tooltip=["county", "price_area", "rent_change_pct", "house_price_change_pct", "gap_pts"],
             )
         )
-        st.altair_chart((reference + points).properties(height=460).interactive())
+        st.altair_chart((reference + points).properties(height=460))  # not interactive: scrolling the page would zoom it
         st.caption("Dots above the dashed line: rents rose faster than house prices. Below the line: prices rose faster.")
 
         st.markdown(
