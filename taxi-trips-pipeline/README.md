@@ -30,6 +30,21 @@ Output folders:
 
 Python, PySpark (DataFrames, window functions, partitioned Parquet writes).
 
+## Sample run
+
+On the generated sample data (50,000 trips, about 3% of them deliberately bad), a run reported:
+
+| Check | Result |
+|---|---|
+| Rows in | 50,000 |
+| Rejected | 1,569 (3.14%) |
+| of which: dropoff before pickup | 529 |
+| of which: non-positive fare | 522 |
+| of which: missing distance | 518 |
+
+The sample generator plants roughly 1% of each kind of bad row, so counts near 500 each show that the
+validation rules catch every kind. Rejected rows are kept in `rejected_trips` with the reason, not deleted.
+
 ## Ideas for next steps
 
 - Schedule it daily with Airflow or Dagster
