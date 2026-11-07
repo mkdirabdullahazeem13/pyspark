@@ -94,15 +94,20 @@ def add_county(df: DataFrame) -> DataFrame:
     county_list = F.array(*[F.lit(c) for c in COUNTIES])
     after_comma = F.trim(F.element_at(F.split(F.col("location"), ","), -1))  # "Tullow, Carlow" -> "Carlow"
     without_suffix = F.regexp_replace(F.col("location"), r"\s+(Town|City)$", "")  # "Carlow Town" -> "Carlow"
+    # "Clontarf, Dublin 3" -> "3"; "Terenure, Dublin 6W" -> "6W"; no match -> ""
+    district = F.regexp_extract(F.col("location"), r"(?:^|,\s*)Dublin (\d{1,2}W?)$", 1)
 
     is_county = F.array_contains(county_list, F.col("location"))
     county = (
         F.when(is_county, F.col("location"))
         .when(F.col("location").contains(",") & F.array_contains(county_list, after_comma), after_comma)
+        .when(district != "", F.lit("Dublin"))  # Dublin postal districts all belong to County Dublin
         .when(F.array_contains(county_list, without_suffix), without_suffix)
     )  # anything else stays null and is listed in the quality report
-    return df.withColumn("county", county).withColumn(
-        "location_level", F.when(is_county, F.lit("county")).otherwise(F.lit("locality"))
+    return (
+        df.withColumn("county", county)
+        .withColumn("dublin_district", F.when(district != "", district))
+        .withColumn("location_level", F.when(is_county, F.lit("county")).otherwise(F.lit("locality")))
     )
 
 
