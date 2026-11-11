@@ -1,6 +1,8 @@
 # Raw and processed data are re-created by the scripts, so they stay out of git
 data/
-output/
+output/*
+# ...except the small joined table the dashboard reads, so the hosted app has data
+!output/rent_vs_house_prices.csv
 __pycache__/
 
 # Editor backup files (Vim)
