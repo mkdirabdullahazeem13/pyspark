@@ -30,6 +30,7 @@ st.caption(
     "Average monthly rent by county (RTB, via the CSO table RIH02) and the regional house price index "
     "(CSO table HPM09). Both are open data under CC BY 4.0."
 )
+st.caption("Made by [mkdirabdullahazeem13](https://github.com/mkdirabdullahazeem13)")
 
 try:
     df = load()
